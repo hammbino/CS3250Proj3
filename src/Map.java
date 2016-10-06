@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.Scanner;
 
 /**
  * Created by jeffreyhammond on 10/6/16.
@@ -23,5 +24,126 @@ public class Map {
     //also define a Loc class that contains row and column values.
     Point location = new Point(0, 0);
 
+    public void inputHandler () {
+        //get a scanner
+        Scanner in = new Scanner(System.in);
+        String command = "";
+
+        while (!isCommand(command, "q")) {
+            System.out.print("> ");
+            //get user input from command line
+            command = in.nextLine();
+
+            //put input into array
+            String[] strCommands = command.split(" +");
+
+            //if statement that checks the command
+            command = strCommands[0];
+            if (isCommand(command, "g")) {
+                if (strCommands.length > 1) {
+                    command = strCommands[1];
+                    if (isCommand(command, "n")) {
+                        String north = "north";
+                        Point newLocal = updateNorthSouthLocation(location, -1);
+                        if (isOutOfBounds(newLocal)) {
+                            //message that would be out of bounds
+                            printOutOfBoundsMessage(north);
+                        } else {
+                            //set new loccation
+                            location = newLocal;
+                            //dispaly message to user about travel direction
+                            printDirectionMoving(north);
+                        }
+                    } else if (isCommand(command, "s")) {
+                        String south = "south";
+                        Point newLocal = updateNorthSouthLocation(location, 1);
+                        if (isOutOfBounds(newLocal)) {
+                            //message that would be out of bounds
+                            printOutOfBoundsMessage(south);
+                        } else {
+                            //set new loccation
+                            location = newLocal;
+                            //dispaly message to user about travel direction
+                            printDirectionMoving(south);
+                        }
+                    } else if (isCommand(command, "e")) {
+                        String east = "east";
+                        Point newLocal = updateEastWestLocation(location, 1);
+                        if (isOutOfBounds(newLocal)) {
+                            //message that would be out of bounds
+                            printOutOfBoundsMessage(east);
+                        } else {
+                            //set new loccation
+                            location = newLocal;
+                            //dispaly message to user about travel direction
+                            printDirectionMoving(east);
+                        }
+                    } else if (isCommand(command, "w")) {
+                        String west = "west";
+                        Point newLocal = updateEastWestLocation(location, -1);
+                        if (isOutOfBounds(newLocal)) {
+                            //message that would be out of bounds
+                            printOutOfBoundsMessage(west);
+                        } else {
+                            //set new loccation
+                            location = newLocal;
+                            //dispaly message to user about travel direction
+                            printDirectionMoving(west);
+                        }
+                    } else {
+                        //unrecognized
+                        System.out.println("You can't go that way.");
+                    }
+                }
+            } else if (isCommand(command, "i")) {
+                GameChar character = new GameChar();
+                character.printInventory();
+
+            } else if (isCommand(command, "q")) {
+                //display farewell message
+                System.out.println("Farewell");
+            } else {
+                //unrecognized command
+                //Invalid command: ?
+                System.out.println("Invalid command: " + command);
+            }
+            //display message to user about current location
+            printCoordinate(location);
+        }
+    }
+    public boolean isCommand(String command, String abreviation) {
+        return command.toLowerCase().startsWith(abreviation);
+    }
+
+    public void printCoordinate(Point curLocal) {
+        //You are at location ? (location)
+        System.out.println("You are at location " + (int) curLocal.getY() + "," + (int) curLocal.getX());
+    }
+
+    public void printOutOfBoundsMessage (String direction) {
+        //"You can't go that far ? (direction)"
+        System.out.println("You can't go that far " + direction);
+    }
+
+    public void printDirectionMoving (String direction) {
+        //Moving ? (direction)...
+        System.out.println("Moving " + direction + "...");
+    }
+
+    public Point updateNorthSouthLocation(Point curLocal, int incrementBy) {
+        return new Point(curLocal.x, curLocal.y + incrementBy);
+    }
+
+    public Point updateEastWestLocation(Point curLocal, int incrementBy) {
+        return new Point(curLocal.x + incrementBy, curLocal.y);
+    }
+
+    public boolean isOutOfBounds(Point location) {
+        int x = location.x;
+        int y = location.y;
+
+        return x < 0 || x > 4 || y < 0 || y > 4;
+    }
 }
+
 
