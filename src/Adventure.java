@@ -9,27 +9,56 @@
 //CS3250
 //Project 3 - Adventure Game
 
-
-import java.awt.*;
 import java.util.Scanner;
 
 public class Adventure {
 
     public static void main(String[] args) {
-//        //Verify a command line parameter given for Map file
-//        if (args.length < 1) {
-//            System.out.println("No file was provided.");
-//            System.exit(0);     // TERMINATE THE PROGRAM
-//        }
+        //Verify a command line parameter given for Map file
+        if (args.length < 1) {
+            System.out.println("No file was provided.");
+            System.exit(0);     // TERMINATE THE PROGRAM
+        }
 
         Adventure adventure = new Adventure();
-        adventure.start();
+        adventure.start(args[0]);
     }
 
-    private void start() {
-        Map map = new Map();
-        //GameChar character = new GameChar();
-        map.inputHandler();
+    private void start(String inputFile) {
+        //create character
+        GameChar character = new GameChar(inputFile);
+
+        //get a scanner
+        Scanner in = new Scanner(System.in);
+        String command = "";
+
+        while (!isCommand(command, "q")) {
+            System.out.print("> ");
+
+            //get user input from command line
+            command = in.nextLine();
+
+            //put input into array
+            String[] strCommands = command.split(" +");
+
+            //if statement that checks the command
+            command = strCommands[0];
+            if (isCommand(command, "g")) {
+                character.characterGo(strCommands);
+            } else if (isCommand(command, "i")) {
+                character.printInventory(character);
+            } else if (isCommand(command, "q")) {
+                //display farewell message
+                System.out.println("Farewell");
+            } else {
+                //unrecognized command
+                System.out.println("Invalid command: " + command);
+            }
+        }
+        in.close();
     }
 
+    public boolean isCommand(String command, String abreviation) {
+        return command.toLowerCase().startsWith(abreviation);
+    }
 }
