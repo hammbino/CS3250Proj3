@@ -7,19 +7,26 @@ import java.util.Arrays;
  */
 public class GameChar {
 
-    ArrayList<String> inventory;
+    private static final int NORTH = -1;
+    private static final int SOUTH = 1;
+    private static final int EAST = 1;
+    private static final int WEST = -1;
+
+    private ArrayList<String> inventory;
 
     //the part of the map visible to the character should be determined by a GameChar object
-    int viewingDistance = 1;
+    private int viewingDistance;
 
     //Characters location
-    Point location = new Point(0, 0);
+    private Point location;
 
-    Map map;
+    private Map map;
 
     GameChar (String inputFile) {
         inventory = new ArrayList<>(Arrays.asList("brass lantern", "rope", "rations", "staff"));
         map = new Map(inputFile);
+        location = new Point(0, 0);
+        viewingDistance = 1;
     }
 
     //print inventory command
@@ -27,76 +34,46 @@ public class GameChar {
         //You are carrying:
         System.out.println("You are carrying:");
         //Array of items
-        for (String temp : character.inventory) {
-            System.out.println(temp);
-        }
+        character.inventory.forEach(System.out::println);
+    }
+
+    private void handleNorthSouth(int direction, Command command) {
+        Point newLocal = updateNorthSouthLocation(location, direction);
+        handleDirection(command, newLocal);
+    }
+
+    private void handleEastWest(int direction, Command command) {
+        Point newLocal = updateEastWestLocation(location, direction);
+        handleDirection(command, newLocal);
     }
 
     //Go command
     public void characterGo (String [] strCommands) {
        if (strCommands.length > 1) {
-           String command = strCommands[1];
-           if (isCommand(command, "n")) {
-               String north = "north";
-               Point newLocal = updateNorthSouthLocation(location, -1);
-               if (isOutOfBounds(newLocal, map)) {
-                   //message that would be out of bounds
-                   printOutOfBoundsMessage(north);
-               } else {
-                   //set new loccation
-                   location = newLocal;
-                   //printDirectionMoving(north);
-               }
-           } else if (isCommand(command, "s")) {
-               String south = "south";
-               Point newLocal = updateNorthSouthLocation(location, 1);
-               if (isOutOfBounds(newLocal, map)) {
-                   //message that would be out of bounds
-                   printOutOfBoundsMessage(south);
-               } else {
-                   //set new loccation
-                   location = newLocal;
-                   //dispaly message to user about travel direction
-                   printDirectionMoving(south);
-               }
-           } else if (isCommand(command, "e")) {
-               String east = "east";
-               Point newLocal = updateEastWestLocation(location, 1);
-               if (isOutOfBounds(newLocal, map)) {
-                   //message that would be out of bounds
-                   printOutOfBoundsMessage(east);
-               } else {
-                   //set new loccation
-                   location = newLocal;
-                   //dispaly message to user about travel direction
-                   printDirectionMoving(east);
-               }
-           } else if (isCommand(command, "w")) {
-               String west = "west";
-               Point newLocal = updateEastWestLocation(location, -1);
-               if (isOutOfBounds(newLocal, map)) {
-                   //message that would be out of bounds
-                   printOutOfBoundsMessage(west);
-               } else {
-                   //set new loccation
-                   location = newLocal;
-                   //dispaly message to user about travel direction
-                   printDirectionMoving(west);
-               }
-           } else {
-               //unrecognized
-               System.out.println("You can't go that way.");
+           Command command = Command.getCommand(strCommands[1]);
+
+           switch (command) {
+               case NORTH:
+                   handleNorthSouth(NORTH, command);
+                   break;
+               case SOUTH:
+                   handleNorthSouth(SOUTH, command);
+                   break;
+               case EAST:
+                   handleEastWest(EAST, command);
+                   break;
+               case WEST:
+                   handleEastWest(WEST, command);
+                   break;
+               default:
+                   //unrecognized
+                   System.out.println("You can't go that way.");
            }
        }
 
         //display message to user about current location
         printCoordinate(location);
-        printMiniMap(location, map);
-    }
-
-    //check if character is a command
-    private boolean isCommand(String command, String abreviation) {
-        return command.toLowerCase().startsWith(abreviation);
+        printMiniMap(map);
     }
 
     //displays characters current location on the map
@@ -105,12 +82,12 @@ public class GameChar {
     }
 
     //prints ouf of bounds message if character is trying to move off the map
-    private void printOutOfBoundsMessage (String direction) {
-        System.out.println("You can't go that far " + direction);
+    private void printOutOfBoundsMessage (Command command) {
+        System.out.println("You can't go that far " + command.getName());
     }
 
     //prints the direction the character is moving
-    private void printDirectionMoving (String direction) {
+    private void printDirectionMoving (Command direction) {
         System.out.println("Moving " + direction + "...");
     }
 
@@ -130,7 +107,7 @@ public class GameChar {
     }
 
     //print mini map surrounding character
-    private void printMiniMap(Point curLocal, Map map) {
+    private void printMiniMap(Map map) {
         int maxRow = location.x + viewingDistance;
         int maxCol = location.y + viewingDistance;
         Point startMini = new Point((location.x - viewingDistance), (location.y - viewingDistance));
@@ -141,6 +118,17 @@ public class GameChar {
                 System.out.print(isOutOfBounds(currentPoint, map) ? 'X' : map.getTerrain(currentPoint));
             }
             System.out.println();
+        }
+    }
+    private void handleDirection (Command command, Point newLocal) {
+        if (isOutOfBounds(newLocal, map)) {
+            //message that would be out of bounds
+            printOutOfBoundsMessage(command);
+        } else {
+            //set new loccation
+            location = newLocal;
+            //printDirectionMoving(north);
+            printDirectionMoving(command);
         }
     }
 }

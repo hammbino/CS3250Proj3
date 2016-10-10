@@ -30,35 +30,32 @@ public class Adventure {
 
         //get a scanner
         Scanner in = new Scanner(System.in);
-        String command = "";
+        Command command = Command.NO_COMMAND;
 
-        while (!isCommand(command, "q")) {
+        while (Command.QUIT != command ) {
             System.out.print("> ");
 
             //get user input from command line
-            command = in.nextLine();
+            String userInput = in.nextLine();
 
             //put input into array
-            String[] strCommands = command.split(" +");
+            String[] strCommands = userInput.split(" +");
 
+            String userCommand = strCommands[0];
             //if statement that checks the command
-            command = strCommands[0];
-            if (isCommand(command, "g")) {
+            command = Command.getCommand(userCommand);
+            if (Command.GO == command) {
                 character.characterGo(strCommands);
-            } else if (isCommand(command, "i")) {
+            } else if (Command.INVENTORY == command) {
                 character.printInventory(character);
-            } else if (isCommand(command, "q")) {
+            } else if (Command.QUIT == command) {
                 //display farewell message
                 System.out.println("Farewell");
             } else {
                 //unrecognized command
-                System.out.println("Invalid command: " + command);
+                System.out.println("Invalid command: " + userCommand);
             }
         }
         in.close();
-    }
-
-    public boolean isCommand(String command, String abreviation) {
-        return command.toLowerCase().startsWith(abreviation);
     }
 }
