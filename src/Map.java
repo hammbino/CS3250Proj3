@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class Map {
     int mapColumn;
     int mapRow;
-    char [][] map;
+    private char [][] map;
 
     //method to read a map from a text file
     Map (String inputFile) {
@@ -34,7 +34,7 @@ public class Map {
 
         this.mapRow = fileIn.nextInt();
         this.mapColumn = fileIn.nextInt();
-        String line = fileIn.nextLine(); //gets the rest of the line
+        fileIn.nextLine(); //gets the rest of the line
 
         System.out.println(mapRow + " " + mapColumn);//Todo remove this line
 
@@ -42,7 +42,7 @@ public class Map {
 
         int row = 0;
         while (fileIn.hasNextLine() && row < mapColumn) {
-            line = fileIn.nextLine();
+            String line = fileIn.nextLine();
             System.out.println(line);//Todo remove this line
             for (int col = 0; col < mapColumn; col++) {
                 charMap[row][col] = line.charAt(col);
