@@ -53,11 +53,7 @@ public class Map {
         return charMap;
     }
 
-    public char[][] getMap () {
-        return map;
-    }
-
-    public char getTerrain (Point currentLocal) {
+    char getTerrain(Point currentLocal) {
         return map[currentLocal.x][currentLocal.y];
     }
 }
